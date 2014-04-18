@@ -1,12 +1,12 @@
 bonsai.run(document.getElementById('movie'), {
   code: init,
   width: 800,
-  height: 530
+  height: 600
 });
 
 function init() {
-  var player_ground_y = 430;
-  var player_x = 680;
+  var player_ground_y = 440;
+  var player_x = 675;
   var grid = [ [ 0, 0, 0, 0, 0 ],
                [ 0, 0, 0, 0, 0 ],
                [ 0, 0, 0, 0, 0 ],
@@ -268,7 +268,9 @@ function init() {
   
   new Rect(0, 0, stage.width, stage.height)
     .addTo(stage)
-    .attr('fillColor', 'yellow');
+    .attr('fillImage', new Bitmap('background_hard.jpg')
+          .attr({'width': 800,
+                 'height': 600}));
 
   climber.addTo(stage);
   climber.onWin = function() {
