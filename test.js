@@ -39,6 +39,7 @@ function init() {
 
   function difficultySelect() {
     var board = new Group();
+    var selected = false;
     
     var bg1 = color('gray').darker(0.1);
     var bg2 = color('gray').lighter(0.1);
@@ -59,14 +60,14 @@ function init() {
              'y': 30
             });
 
-    var mediumButton = new Group()
+    var normalButton = new Group()
       .addTo(board)
       .attr({'x': 300, 'y': 200});
-    var mediumBg = new Rect(0, 0, 200, 200, 10)
-      .addTo(mediumButton)
+    var normalBg = new Rect(0, 0, 200, 200, 10)
+      .addTo(normalButton)
       .attr({'fillColor': color('green').lighter(0.2)});
-    var mediumIcon = new Bitmap('difficulty_normal.png')
-      .addTo(mediumButton)
+    var normalIcon = new Bitmap('difficulty_normal.png')
+      .addTo(normalButton)
       .attr({'width': 100,
              'x': 50,
              'y': 30
@@ -84,6 +85,47 @@ function init() {
              'x': 50,
              'y': 30
             });
+
+    function select(button, difficulty) {
+      if (selected) return;
+      selected = true;
+      var bb = button.getBoundingBox();
+      button.setOrigin(bb.left + bb.width / 2,
+                       bb.top + bb.height / 2);
+      button.animate(new KeyframeAnimation(
+        '0.2s',
+        { 'from': { 'scale': 1 },
+          '30%': { 'scale': 0.9 },
+          '60%': { 'scale': 1.1 },
+          'to': { 'scale': 1 }
+        }
+      ));
+      setTimeout(function() {
+        board.onSelect(difficulty);
+      }, 300);
+    }
+
+    easyButton.on('multi:pointerdown', function() {
+      select(easyButton, {background: 'background_easy.jpg',
+                          climbHeight: 50,
+                          slideTimeInterval: 20000,
+                          slideTimeHeight: 10,
+                          slideWrongHeight: 0});
+    });
+    normalButton.on('multi:pointerdown', function() {
+      select(normalButton, {background: 'background_normal.jpg',
+              climbHeight: 50,
+              slideTimeInterval: 10000,
+              slideTimeHeight: 20,
+              slideWrongHeight: 4});
+    });
+    hardButton.on('multi:pointerdown', function() {
+      select(hardButton, {background: 'background_hard.jpg',
+              climbHeight: 50,
+              slideTimeInterval: 10000,
+              slideTimeHeight: 20,
+              slideWrongHeight: 10});
+    });
 
     return board;
   }
@@ -295,7 +337,7 @@ function init() {
   
     var open = [];
     function flip(crd) {
-      climber.slideDown(2);
+      climber.slideDown(difficulty.slideWrongHeight);
       if (crd.isRevealed())
         return;
       while (open.length > 1)
@@ -425,11 +467,9 @@ function init() {
   var d = difficultySelect()
     .addTo(stage);
 
-  var g = game({background: 'background_normal.jpg',
-                climbHeight: 500,
-                slideTimeInterval: 10000,
-                slideTimeHeight: 20,
-                slideWrongHeight: 4})
-    //.addTo(stage);
-  g.onWin = won;
+  d.onSelect = function(difficulty) {
+    var g = game(difficulty);
+    g.addTo(stage);
+    g.onWin = win;
+  }
 }
