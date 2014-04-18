@@ -124,7 +124,7 @@ function init() {
               climbHeight: 50,
               slideTimeInterval: 10000,
               slideTimeHeight: 20,
-              slideWrongHeight: 10});
+              slideWrongHeight: 7});
     });
 
     return board;
@@ -375,17 +375,19 @@ function init() {
             .attr({'width': 800,
                    'height': 600}));
     
+    var cat = new Bitmap('cat_test.png')
+      .addTo(gameArea)
+      .attr({'width': 40,
+             'x': player_x + 15,
+             'y': 40});
+
     climber.addTo(gameArea);
     climber.onWin = function() {
       climber.remove();
       winner.addTo(gameArea).win(climber.getY(), cat);
       gameArea.onWin();
     };
-    var cat = new Bitmap('cat_test.png')
-      .addTo(gameArea)
-      .attr({'width': 40,
-             'x': player_x + 15,
-             'y': 40});
+
     var winner = mkWinner();
     
     var ids = idStream();
