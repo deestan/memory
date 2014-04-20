@@ -145,19 +145,71 @@ function init() {
 
   function mkWinScreen(cats) {
     var container = new Group();
+    var stopped = false;
+
+    new Rect(0, 0, 800, 600, 0)
+      .addTo(container)
+      .fill(gradient.linear('top', [
+        color('green').lighter(0.1),
+        color('green').lighter(0.3)
+      ]));
     
     function catPos(i) {
-      return [{'x': 200, 'y': 300},
-              {'x': 280, 'y': 350},
-              {'x': 400, 'y': 310}][i];
+      return [{'x': 150, 'y': 300},
+              {'x': 280, 'y': 380},
+              {'x': 500, 'y': 350}][i];
     }
+
     for (var i = 0; i < cats.length; i++) {
       cats[i].remove();
       cats[i].addTo(container);
       cats[i].attr(catPos(i));
       cats[i].wake();
+      cats[i].getBig();
     }
 
+    var dancer = new Group()
+      .addTo(container)
+      .attr({'x': 320,
+             'y': 100});
+
+    dancer.animate(new KeyframeAnimation(
+      '0.5s',
+      { 'from': { 'y': 100 },
+        '50%' : { 'y': 150 },
+        'to'  : { 'y': 100 }
+      }, {
+        'easing': 'circInOut',
+        'repeat': Infinity
+      }));
+    
+    var danceImg_i = 0;
+    var danceImg = [
+      new Bitmap('player_dance_1.png')
+        .addTo(dancer)
+        .attr({'width': 200}),
+      new Bitmap('player_dance_2.png')
+        .addTo(dancer)
+        .attr({'width': 200})
+    ];
+
+    function dance() {
+      danceImg[danceImg_i]
+        .animate('1', {'opacity': 0});
+      danceImg_i = (danceImg_i + 1) % 2;
+      danceImg[danceImg_i]
+        .animate('1', {'opacity': 1});
+    }
+    
+    var danceInterval = setInterval(dance, 500);
+    dance();
+
+    function stop() {
+      clearInterval(danceInterval);
+    }
+
+    container.stop = stop;
+    
     return container;
   }
   
@@ -235,6 +287,7 @@ function init() {
       }
       
       container.add = add;
+      container.getCats = function() { return cats; };
       return container;
     }
     
@@ -251,8 +304,20 @@ function init() {
         sleepImg.addTo(container);
         standImg.remove();
       }
+
+      function wake() {
+        standImg.addTo(container);
+        sleepImg.remove();
+      }
+
+      function getBig() {
+        standImg.attr({'width': 150});
+        sleepImg.attr({'width': 150});
+      }
       
+      container.getBig = getBig;
       container.sleep = sleep;
+      container.wake = wake;
 
       return container;
     }
@@ -468,7 +533,10 @@ function init() {
     var climber = mkClimber(20);
   
     var open = [];
+    var pauseFlips = false;
     function flip(crd) {
+      if (pauseFlips)
+        return;
       climber.slideDown(difficulty.slideWrongHeight);
       if (crd.isRevealed()) {
         if (open.length == 2 && crd == open[0]) {
@@ -522,15 +590,17 @@ function init() {
 
     climber.addTo(gameArea);
     climber.onWin = function() {
+      pauseFlips = true;
       climber.remove();
       var saved = treeCats.pop();
       winner.addTo(gameArea).win(climber.getY(), saved);
       gameTimeout(function() {
+        pauseFlips = false;
+        groundCats.add(saved);
         if (treeCats.empty()) {
-          gameArea.onWin();
+          gameArea.onWin(groundCats.getCats());
         } else {
           winner.remove();
-          groundCats.add(saved);
           climber.reset();
           climber.addTo(gameArea);
         }
@@ -623,13 +693,19 @@ function init() {
         var winScreen = mkWinScreen(cats);
         g.remove();
         winScreen.addTo(stage);
-        winScreen.onDone(function() {
-          setTimeout(start, 0);
-        });
+        winScreen.onDone = function() {
+          winScreen.remove();
+          winScreen.stop();
+          restart();
+        };
       }
       
       g.onWin = won;
     }
+  }
+
+  function restart() {
+    setTimeout(start, 0);
   }
 
   start();
