@@ -262,8 +262,8 @@ function init() {
       var cats = [];
 
       function goLieDown(cat) {
-        var x = Math.random() * 500 + 50;
-        var y = Math.random() * 40 + player_ground_y + 50;
+        var x = Math.floor(Math.random() * 550 + 100);
+        var y = Math.floor(Math.random() * 40 + player_ground_y + 50);
         var o_x = cat.attr('x');
         var o_y = cat.attr('y');
         var dist = Math.sqrt((x - o_x) * (x - o_x) + (y - o_y) * (y - o_y));
@@ -283,10 +283,14 @@ function init() {
         cat.attr({'x': spos.x, 'y': spos.y});
         cat.addTo(container);
         cats.push(cat);
-        goLieDown(cat);
+      }
+
+      function animateLast() {
+        goLieDown(cats[cats.length - 1]);
       }
       
       container.add = add;
+      container.animateLast = animateLast;
       container.getCats = function() { return cats; };
       return container;
     }
@@ -603,6 +607,8 @@ function init() {
           winner.remove();
           climber.reset();
           climber.addTo(gameArea);
+          climber.climb();
+          groundCats.animateLast();
         }
       }, 3000);
     };
