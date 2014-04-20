@@ -16,6 +16,19 @@ function init() {
     }
     return arr;
   }
+
+  function triangularRandInt(min, max, mode) {
+    var u = Math.random();
+    var res;
+    if (u < (mode - min) / (max - min))
+      res = min + Math.sqrt(u * (max - min) * (mode - min));
+    else
+      res = max - Math.sqrt((1 - u) * (max - min) * (max - mode));
+    res = Math.floor(res);
+    if (res >= max)
+      res = max - 1;
+    return res;
+  }
     
   function idStream() {
     var queue = [];
@@ -27,7 +40,7 @@ function init() {
           pickQueue = shuffle(ids);
         var id = pickQueue.pop();
         queue[0] = id;
-        var nxt = Math.floor(Math.random() * 15);
+        var nxt = triangularRandInt(0, 15, 15);
         while (queue[nxt] != undefined)
           nxt += 1;
         queue[nxt] = id;
@@ -65,7 +78,7 @@ function init() {
       .attr({'x': 300, 'y': 200});
     var normalBg = new Rect(0, 0, 200, 200, 10)
       .addTo(normalButton)
-      .attr({'fillColor': color('green').lighter(0.2)});
+      .attr({'fillColor': color('green').lighter(0.4)});
     var normalIcon = new Bitmap('difficulty_normal.png')
       .addTo(normalButton)
       .attr({'width': 100,
@@ -107,9 +120,9 @@ function init() {
 
     easyButton.on('multi:pointerdown', function() {
       select(easyButton, {background: 'background_easy.jpg',
-                          climbHeight: 50,
+                          climbHeight: 60,
                           slideTimeInterval: 20000,
-                          slideTimeHeight: 10,
+                          slideTimeHeight: 5,
                           slideWrongHeight: 0});
     });
     normalButton.on('multi:pointerdown', function() {
@@ -129,8 +142,26 @@ function init() {
 
     return board;
   }
+
+  function mkWinScreen(cats) {
+    var container = new Group();
+    
+    function catPos(i) {
+      return [{'x': 200, 'y': 300},
+              {'x': 280, 'y': 350},
+              {'x': 400, 'y': 310}][i];
+    }
+    for (var i = 0; i < cats.length; i++) {
+      cats[i].remove();
+      cats[i].addTo(container);
+      cats[i].attr(catPos(i));
+      cats[i].wake();
+    }
+
+    return container;
+  }
   
-  function game(difficulty) {
+  function mkGame(difficulty) {
     var gameArea = new Group();
 
     var stopped = false;
@@ -142,8 +173,8 @@ function init() {
       return { clear: function() { clearTimeout(to); } };
     }
     
-    var player_ground_y = 440;
-    var player_x = 675;
+    var player_ground_y = 450;
+    var player_x = 670;
     var grid = [ [ 0, 0, 0, 0, 0 ],
                  [ 0, 0, 0, 0, 0 ],
                  [ 0, 0, 0, 0, 0 ],
@@ -162,14 +193,104 @@ function init() {
         catImg
           .remove()
           .addTo(container)
-          .attr({'x': 15,
-                 'y': 38 });
+          .attr({'x': 0,
+                 'y': 22 });
         container.animate('2s',
                           { 'y': player_ground_y },
                           { 'easing': 'bounceOut' });
       }
       
       container.win = win;
+      return container;
+    }
+
+    function mkGroundCats() {
+      var container = new Group();
+
+      var cats = [];
+
+      function goLieDown(cat) {
+        var x = Math.random() * 500 + 50;
+        var y = Math.random() * 40 + player_ground_y + 50;
+        var o_x = cat.attr('x');
+        var o_y = cat.attr('y');
+        var dist = Math.sqrt((x - o_x) * (x - o_x) + (y - o_y) * (y - o_y));
+        var animTimeS = Math.sqrt(dist / 260);
+        if (animTimeS < 0.5)
+          animTimeS = 0.5;
+        cat.animate(animTimeS + 's', {'x': x, 'y': y});
+        setTimeout(function replaceWithSleepCat() {
+          cat.sleep();
+        }, Math.floor(animTimeS * 1000));
+      }
+
+      function add(cat) {
+        var pos = new Point(cat.attr('x'), cat.attr('y'));
+        var spos = cat.localToGlobal(pos);
+        cat.remove();
+        cat.attr({'x': spos.x, 'y': spos.y});
+        cat.addTo(container);
+        cats.push(cat);
+        goLieDown(cat);
+      }
+      
+      container.add = add;
+      return container;
+    }
+    
+    function mkCat() {
+      var container = new Group();
+      
+      var standImg = new Bitmap('cat1_stand.png')
+        .attr({'width': 70})
+        .addTo(container);
+      var sleepImg = new Bitmap('cat1_sleep.png')
+        .attr({'width': 70});
+
+      function sleep() {
+        sleepImg.addTo(container);
+        standImg.remove();
+      }
+      
+      container.sleep = sleep;
+
+      return container;
+    }
+
+    function mkTreeCats() {
+      var container = new Group()
+        .attr({'x': player_x + 3,
+               'y': 35});
+
+      var cats = [];
+      for (var i = 0; i < 3; i++) {
+        var cat = mkCat()
+          .addTo(container)
+          .attr(position(i));
+        cats.push(cat);
+      };
+
+      function position(idx) {
+        return [{'x': 0, 'y': 0},
+                {'x': -40, 'y': -15},
+                {'x': 44, 'y': -8}][idx];
+      }
+    
+      function reposition() {
+        for (var i = 0; i < cats.length; i++) {
+          cats[i].animate('0.5s', position(i));
+        }
+      }
+
+      function pop() {
+        var popped = cats.splice(0, 1)[0];
+        reposition();
+        return popped;
+      }
+      
+      container.pop = pop;
+      container.empty = function() { return cats.length == 0; };
+
       return container;
     }
     
@@ -190,6 +311,10 @@ function init() {
                  'opacity': 0});
       }
       imgs['player_sit_sad'].attr('opacity', 1);
+      function reset() {
+        y = player_ground_y;
+        container.attr({'y': y});
+      }
       function climb() {
         y -= difficulty.climbHeight;
         if (y <= winY) {
@@ -236,6 +361,7 @@ function init() {
                           { 'y': y });
       }
       container.climb = climb;
+      container.reset = reset;
       container.slideDown = slideDown;
       container.getY = function() { return y };
       container.onWin = null;
@@ -271,6 +397,11 @@ function init() {
       function age() {
         border.animate('0.5s',
                        { 'fillColor': 'gray' });
+      }
+      
+      function rejuvenate() {
+        border.animate('0.5s',
+                       { 'fillColor': 'black' });
       }
       
       function boing(show, hide) {
@@ -328,6 +459,7 @@ function init() {
       container.reveal = reveal;
       container.hide = hide;
       container.age = age;
+      container.rejuvenate = rejuvenate;
       container.cardId = id;
       container.found = found;
       return container;
@@ -338,8 +470,16 @@ function init() {
     var open = [];
     function flip(crd) {
       climber.slideDown(difficulty.slideWrongHeight);
-      if (crd.isRevealed())
+      if (crd.isRevealed()) {
+        if (open.length == 2 && crd == open[0]) {
+          var x = open[0];
+          open[0] = open[1];
+          open[1] = x;
+          open[0].age();
+          open[1].rejuvenate();
+        }
         return;
+      }
       while (open.length > 1)
         open.splice(0, 1)[0].hide();
       open.push(crd);
@@ -375,17 +515,26 @@ function init() {
             .attr({'width': 800,
                    'height': 600}));
     
-    var cat = new Bitmap('cat_test.png')
-      .addTo(gameArea)
-      .attr({'width': 40,
-             'x': player_x + 15,
-             'y': 40});
+    var treeCats = mkTreeCats();
+    treeCats.addTo(gameArea);
+    var groundCats = mkGroundCats();
+    groundCats.addTo(gameArea);
 
     climber.addTo(gameArea);
     climber.onWin = function() {
       climber.remove();
-      winner.addTo(gameArea).win(climber.getY(), cat);
-      gameArea.onWin();
+      var saved = treeCats.pop();
+      winner.addTo(gameArea).win(climber.getY(), saved);
+      gameTimeout(function() {
+        if (treeCats.empty()) {
+          gameArea.onWin();
+        } else {
+          winner.remove();
+          groundCats.add(saved);
+          climber.reset();
+          climber.addTo(gameArea);
+        }
+      }, 3000);
     };
 
     var winner = mkWinner();
@@ -421,7 +570,7 @@ function init() {
       repopulateTime = newTime;
       repopulateTimeout = gameTimeout(repopulate, ms);
     }
-    
+
     function repopulate() {
       repopulateTimeout = null;
       if (cards < GRID_AREA) {
@@ -462,16 +611,26 @@ function init() {
     return gameArea;
   }
 
-  function won() {
-    console.log('yay');
+  function start() {
+    var d = difficultySelect()
+      .addTo(stage);
+
+    d.onSelect = function(difficulty) {
+      var g = mkGame(difficulty);
+      g.addTo(stage);
+
+      function won(cats) {
+        var winScreen = mkWinScreen(cats);
+        g.remove();
+        winScreen.addTo(stage);
+        winScreen.onDone(function() {
+          setTimeout(start, 0);
+        });
+      }
+      
+      g.onWin = won;
+    }
   }
 
-  var d = difficultySelect()
-    .addTo(stage);
-
-  d.onSelect = function(difficulty) {
-    var g = game(difficulty);
-    g.addTo(stage);
-    g.onWin = win;
-  }
+  start();
 }
