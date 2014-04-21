@@ -50,6 +50,17 @@ function init() {
     return yieldo;
   }
 
+  function mkText(text, size_) {
+    var size = size_ || 50;
+    return new Text(text).attr({
+      'fontFamily': 'monospace',
+      'fontSize': size,
+      'textFillColor': 'black',
+      'textStrokeColor': 'grey',
+      'textStrokeWidth': Math.floor(size / 50)
+    });
+  }
+
   var bitmaps;
   function loadBitmaps(onDone) {
     data = {};
@@ -66,7 +77,7 @@ function init() {
     }
 
     function loadedOne() {
-      --toLoad || setTimeout(onDone, 100);
+      --toLoad || setTimeout(onDone, 1000);
     }
 
     function get(id) {
@@ -116,8 +127,12 @@ function init() {
       .addTo(easyButton)
       .attr({'width': 100,
              'x': 50,
-             'y': 30
+             'y': 35
             });
+    mkText("LETT", 30)
+      .addTo(easyButton)
+      .attr({'x': 64,
+             'y': 160});
 
     var normalButton = new Group()
       .addTo(board)
@@ -129,8 +144,12 @@ function init() {
       .addTo(normalButton)
       .attr({'width': 100,
              'x': 50,
-             'y': 30
+             'y': 20
             });
+    mkText("MIDDELS", 30)
+      .addTo(normalButton)
+      .attr({'x': 38,
+             'y': 160});
 
     var hardButton = new Group()
       .addTo(board)
@@ -142,8 +161,26 @@ function init() {
       .addTo(hardButton)
       .attr({'width': 100,
              'x': 50,
-             'y': 30
+             'y': 20
             });
+    mkText("VANSKELIG", 30)
+      .addTo(hardButton)
+      .attr({'x': 17,
+             'y': 160});
+
+    mkText("MEMORY GAME")
+      .addTo(board)
+      .attr({'x': 235,
+             'y': 40});
+    mkText("JENTE REDDER KATTER")
+      .addTo(board)
+      .attr({'x': 110,
+             'y': 100});
+
+    mkText("Grafisk design: Elena og Olive", 30)
+      .addTo(board)
+      .attr({'x': 130,
+             'y': 500});
 
     function select(button, difficulty) {
       if (selected) return;
@@ -200,6 +237,11 @@ function init() {
         color('green').lighter(0.3)
       ]));
     
+    mkText("DU VANT!", 80)
+      .addTo(container)
+      .attr({'x': 215,
+             'y': 40});
+
     function catPos(i) {
       return [{'x': 150, 'y': 300},
               {'x': 280, 'y': 380},
@@ -434,7 +476,7 @@ function init() {
         y -= difficulty.climbHeight;
         if (y <= winY) {
           y = winY;
-          gameTimeout(container.onWin, 1000);
+          gameTimeout(container.onWin, 100);
         }
         imgs['player_sit_sad'].attr('opacity', 0);
         imgs['player_climb_1'].animate(new KeyframeAnimation(
@@ -749,6 +791,7 @@ function init() {
       .addTo(stage);
 
     d.onSelect = function(difficulty) {
+      d.destroy();
       gameScreen = mkGame(difficulty);
       gameScreen.addTo(stage);
       exitBtn.addTo(stage);
@@ -769,13 +812,19 @@ function init() {
     if (winScreen) {
       winScreen.remove();
       winScreen.stop();
+      winScreen.destroy();
     }
     if (gameScreen) {
       gameScreen.remove();
       gameScreen.stop();
+      gameScreen.destroy();
     }
     setTimeout(start, 0);
   }
 
+  mkText('Loading...').addTo(stage).attr({
+    'x': 240,
+    'y': 270
+  });
   loadBitmaps(start);
 }
