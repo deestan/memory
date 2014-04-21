@@ -390,10 +390,10 @@ function init() {
       var container = new Group();
       
       var standImg = bitmaps('cat1_stand')
-        .attr({'width': 70, 'height': 104})
+        .attr({'width': 70, 'height': 59})
         .addTo(container);
       var sleepImg = bitmaps('cat1_sleep')
-        .attr({'width': 70, 'height': 104});
+        .attr({'width': 70, 'height': 59});
 
       function sleep() {
         sleepImg.addTo(container);
@@ -406,8 +406,8 @@ function init() {
       }
 
       function getBig() {
-        standImg.attr({'width': 150, 'height': 224});
-        sleepImg.attr({'width': 150, 'height': 224});
+        standImg.attr({'width': 150, 'height': 126});
+        sleepImg.attr({'width': 150, 'height': 126});
       }
       
       container.getBig = getBig;
