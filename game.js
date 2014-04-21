@@ -64,20 +64,33 @@ function init() {
   var bitmaps;
   function loadBitmaps(onDone) {
     data = {};
+
     toLoad = 1; // 1 dummy value to assure we line up all loads before reaching 0
+    var queue = [];
 
     function load(id, ext) {
       if (!ext)
         ext = 'png';
-      toLoad += 1;
-      new Bitmap(id + '.' + ext).on('load', function() {
-        data[id] = this;
-        loadedOne();
-      });
+      queue.push({ id: id, name: id + '.' + ext });
+      tryPopQueue();
     }
 
+    function tryPopQueue() {
+      while (queue.length > 0 && toLoad < 5) {
+        var el = queue.pop();
+        toLoad += 1;
+        new Bitmap(el.name).on('load', function() {
+          data[el.id] = this;
+          loadedOne();
+        });
+      }
+    }
+    
     function loadedOne() {
-      --toLoad || setTimeout(onDone, 1000);
+      toLoad -= 1;
+      tryPopQueue();
+      if (toLoad == 0)
+        setTimeout(onDone, 100);
     }
 
     function get(id) {
