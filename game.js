@@ -278,10 +278,10 @@ function init() {
     var danceImg = [
       bitmaps('player_dance_1')
         .addTo(dancer)
-        .attr({'width': 200, 'height': 200}),
+        .attr({'width': 200, 'height': 284}),
       bitmaps('player_dance_2')
         .addTo(dancer)
-        .attr({'width': 200, 'height': 200})
+        .attr({'width': 200, 'height': 284})
     ];
 
     function dance() {
