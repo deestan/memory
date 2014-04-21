@@ -81,7 +81,9 @@ function init() {
     }
 
     function get(id) {
-      return data[id].clone();
+      var d = data[id];
+      data[id] = d.clone();
+      return d;
     }
     bitmaps = get;
 
