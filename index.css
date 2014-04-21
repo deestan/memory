@@ -12,3 +12,7 @@ body {
     width: 800px;
     height: 600px;
 }
+
+#blurb {
+    display: none;
+}
