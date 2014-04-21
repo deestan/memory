@@ -50,6 +50,52 @@ function init() {
     return yieldo;
   }
 
+  var bitmaps;
+  function loadBitmaps(onDone) {
+    data = {};
+    toLoad = 1; // 1 dummy value to assure we line up all loads before reaching 0
+
+    function load(id, ext) {
+      if (!ext)
+        ext = 'png';
+      toLoad += 1;
+      new Bitmap(id + '.' + ext).on('load', function() {
+        data[id] = this;
+        loadedOne();
+      });
+    }
+
+    function loadedOne() {
+      --toLoad || setTimeout(onDone, 100);
+    }
+
+    function get(id) {
+      return data[id].clone();
+    }
+    bitmaps = get;
+
+    load('player_dance_1');
+    load('player_dance_2');
+    load('player_climb_1');
+    load('player_climb_2');
+    load('player_hang');
+    load('player_hold');
+    load('player_sit_sad');
+    load('exit');
+    load('cat1_stand');
+    load('cat1_sleep');
+    load('back');
+    load('difficulty_easy');
+    load('difficulty_normal');
+    load('difficulty_hard');
+    load('background_easy', 'jpg');
+    load('background_normal', 'jpg');
+    load('background_hard', 'jpg');
+    for (var i = 0; i < 20; load(i++));
+
+    loadedOne();
+  }
+
   function difficultySelect() {
     var board = new Group();
     var selected = false;
@@ -66,7 +112,7 @@ function init() {
     var easyBg = new Rect(0, 0, 200, 200, 10)
       .addTo(easyButton)
       .attr({'fillColor': color('blue').lighter(0.2)});
-    var easyIcon = new Bitmap('difficulty_easy.png')
+    var easyIcon = bitmaps('difficulty_easy')
       .addTo(easyButton)
       .attr({'width': 100,
              'x': 50,
@@ -79,7 +125,7 @@ function init() {
     var normalBg = new Rect(0, 0, 200, 200, 10)
       .addTo(normalButton)
       .attr({'fillColor': color('green').lighter(0.4)});
-    var normalIcon = new Bitmap('difficulty_normal.png')
+    var normalIcon = bitmaps('difficulty_normal')
       .addTo(normalButton)
       .attr({'width': 100,
              'x': 50,
@@ -92,7 +138,7 @@ function init() {
     var hardBg = new Rect(0, 0, 200, 200, 10)
       .addTo(hardButton)
       .attr({'fillColor': color('red').lighter(0.2)});
-    var hardIcon = new Bitmap('difficulty_hard.png')
+    var hardIcon = bitmaps('difficulty_hard')
       .addTo(hardButton)
       .attr({'width': 100,
              'x': 50,
@@ -119,21 +165,21 @@ function init() {
     }
 
     easyButton.on('multi:pointerdown', function() {
-      select(easyButton, {background: 'background_easy.jpg',
+      select(easyButton, {background: 'background_easy',
                           climbHeight: 60,
                           slideTimeInterval: 20000,
                           slideTimeHeight: 5,
                           slideWrongHeight: 0});
     });
     normalButton.on('multi:pointerdown', function() {
-      select(normalButton, {background: 'background_normal.jpg',
+      select(normalButton, {background: 'background_normal',
               climbHeight: 50,
               slideTimeInterval: 10000,
               slideTimeHeight: 20,
               slideWrongHeight: 4});
     });
     hardButton.on('multi:pointerdown', function() {
-      select(hardButton, {background: 'background_hard.jpg',
+      select(hardButton, {background: 'background_hard',
               climbHeight: 50,
               slideTimeInterval: 10000,
               slideTimeHeight: 20,
@@ -185,10 +231,10 @@ function init() {
     
     var danceImg_i = 0;
     var danceImg = [
-      new Bitmap('player_dance_1.png')
+      bitmaps('player_dance_1')
         .addTo(dancer)
         .attr({'width': 200}),
-      new Bitmap('player_dance_2.png')
+      bitmaps('player_dance_2')
         .addTo(dancer)
         .attr({'width': 200})
     ];
@@ -237,7 +283,7 @@ function init() {
     function mkWinner() {
       var container = new Group()
         .attr({'x': player_x});
-    var img = new Bitmap('player_hold.png').
+    var img = bitmaps('player_hold').
         addTo(container)
         .attr({'width': 80});
       function win(y, catImg) {
@@ -298,10 +344,10 @@ function init() {
     function mkCat() {
       var container = new Group();
       
-      var standImg = new Bitmap('cat1_stand.png')
+      var standImg = bitmaps('cat1_stand')
         .attr({'width': 70})
         .addTo(container);
-      var sleepImg = new Bitmap('cat1_sleep.png')
+      var sleepImg = bitmaps('cat1_sleep')
         .attr({'width': 70});
 
       function sleep() {
@@ -374,7 +420,7 @@ function init() {
                    'player_climb_2': 0,
                    'player_hang': 0 };
       for (var key in imgs) {
-        imgs[key] = new Bitmap(key + '.png')
+        imgs[key] = bitmaps(key)
           .addTo(container)
           .attr({'width': 80,
                  'opacity': 0});
@@ -453,11 +499,11 @@ function init() {
       var back = new Rect(0, 0, 120, 120, 5)
         .addTo(container)
         .attr('fillImage',
-              new Bitmap('back.png')
+              bitmaps('back')
               .attr({'width': 120,
                      'height': 120})
              );
-      var pic = new Bitmap(id + '.png')
+      var pic = bitmaps(id)
         .attr({'width': 110,
                'height': 110,
                'x': 5,
@@ -583,7 +629,7 @@ function init() {
     
     new Rect(0, 0, stage.width, stage.height)
       .addTo(gameArea)
-      .attr('fillImage', new Bitmap(difficulty.background)
+      .attr('fillImage', bitmaps(difficulty.background)
             .attr({'width': 800,
                    'height': 600}));
     
@@ -687,32 +733,49 @@ function init() {
     return gameArea;
   }
 
+  var exitBtn;
+  var gameScreen, winScreen;
+
   function start() {
+    if (!exitBtn)
+      exitBtn = bitmaps('exit')
+      .attr({'width': 50,
+             'height': 50,
+             'x': 2,
+             'y': 550})
+      .on('multi:pointerdown', restart);
+
     var d = difficultySelect()
       .addTo(stage);
 
     d.onSelect = function(difficulty) {
-      var g = mkGame(difficulty);
-      g.addTo(stage);
+      gameScreen = mkGame(difficulty);
+      gameScreen.addTo(stage);
+      exitBtn.addTo(stage);
 
       function won(cats) {
-        var winScreen = mkWinScreen(cats);
-        g.remove();
+        winScreen = mkWinScreen(cats);
+        gameScreen.remove();
+        exitBtn.remove();
         winScreen.addTo(stage);
-        winScreen.onDone = function() {
-          winScreen.remove();
-          winScreen.stop();
-          restart();
-        };
+        exitBtn.addTo(stage);
       }
       
-      g.onWin = won;
+      gameScreen.onWin = won;
     }
   }
 
   function restart() {
+    if (winScreen) {
+      winScreen.remove();
+      winScreen.stop();
+    }
+    if (gameScreen) {
+      gameScreen.remove();
+      gameScreen.stop();
+    }
     setTimeout(start, 0);
   }
 
-  start();
+  loadBitmaps(start);
 }
