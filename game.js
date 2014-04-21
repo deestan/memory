@@ -126,6 +126,7 @@ function init() {
     var easyIcon = bitmaps('difficulty_easy')
       .addTo(easyButton)
       .attr({'width': 100,
+             'height': 142,
              'x': 50,
              'y': 35
             });
@@ -143,6 +144,7 @@ function init() {
     var normalIcon = bitmaps('difficulty_normal')
       .addTo(normalButton)
       .attr({'width': 100,
+             'height': 142,
              'x': 50,
              'y': 20
             });
@@ -160,6 +162,7 @@ function init() {
     var hardIcon = bitmaps('difficulty_hard')
       .addTo(hardButton)
       .attr({'width': 100,
+             'height': 142,
              'x': 50,
              'y': 20
             });
@@ -275,10 +278,10 @@ function init() {
     var danceImg = [
       bitmaps('player_dance_1')
         .addTo(dancer)
-        .attr({'width': 200}),
+        .attr({'width': 200, 'height': 200}),
       bitmaps('player_dance_2')
         .addTo(dancer)
-        .attr({'width': 200})
+        .attr({'width': 200, 'height': 200})
     ];
 
     function dance() {
@@ -327,7 +330,7 @@ function init() {
         .attr({'x': player_x});
     var img = bitmaps('player_hold').
         addTo(container)
-        .attr({'width': 80});
+        .attr({'width': 80, 'height': 114});
       function win(y, catImg) {
         container.attr({ 'y': y });
         catImg
@@ -387,10 +390,10 @@ function init() {
       var container = new Group();
       
       var standImg = bitmaps('cat1_stand')
-        .attr({'width': 70})
+        .attr({'width': 70, 'height': 104})
         .addTo(container);
       var sleepImg = bitmaps('cat1_sleep')
-        .attr({'width': 70});
+        .attr({'width': 70, 'height': 104});
 
       function sleep() {
         sleepImg.addTo(container);
@@ -403,8 +406,8 @@ function init() {
       }
 
       function getBig() {
-        standImg.attr({'width': 150});
-        sleepImg.attr({'width': 150});
+        standImg.attr({'width': 150, 'height': 224});
+        sleepImg.attr({'width': 150, 'height': 224});
       }
       
       container.getBig = getBig;
@@ -465,6 +468,7 @@ function init() {
         imgs[key] = bitmaps(key)
           .addTo(container)
           .attr({'width': 80,
+                 'height': 114,
                  'opacity': 0});
       }
       imgs['player_sit_sad'].attr('opacity', 1);
