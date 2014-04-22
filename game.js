@@ -229,16 +229,16 @@ function init() {
     normalButton.on('multi:pointerdown', function() {
       select(normalButton, {background: 'background_normal',
               climbHeight: 50,
-              slideTimeInterval: 10000,
-              slideTimeHeight: 20,
-              slideWrongHeight: 4});
+              slideTimeInterval: 20000,
+              slideTimeHeight: 10,
+              slideWrongHeight: 2});
     });
     hardButton.on('multi:pointerdown', function() {
       select(hardButton, {background: 'background_hard',
               climbHeight: 50,
               slideTimeInterval: 10000,
               slideTimeHeight: 20,
-              slideWrongHeight: 7});
+              slideWrongHeight: 4});
     });
 
     return board;
