@@ -1,3 +1,58 @@
+/********************************************************************
+
+OHAI!  My condolences, but you seem to have accidentally started
+looking at the source code.  To prevent injury to yourself and others,
+please observe:
+
+My spare time game projects generally fall into two categories.
+  1) Projects in which I at least *try* to keep the code somewhat
+     readable, clean, maintainable and efficient.
+  2) Projects that reach a finished state.
+
+This is a category 2 project.  This means the code is unsuitable for:
+
+ * Learning programming.  In programming there are a lot of style
+   conventions, maintenance concerns, safety mechanisms, and general
+   "best practices" that you should learn to respect and follow before
+   you learn when it's appropriate to break them.  This code breaks
+   too many of these to be in any way exemplary.  I guess the best
+   thing you can learn from this code is to observe how utterly
+   impenetrable and undocumented the bits are, and be extremely aware
+   that if you write code like this in a team or "real" ("production")
+   setting, the best case is that your team members will punch you and
+   yell at you and tell you to rewrite it, and the worst case is that
+   you will start using and extending the code resulting in a
+   development and maintenance nightmare.
+
+ * Evaluating my programming style or skills.  For that, please look
+   at some of my other projects instead.  This project is what is
+   professionally referred to as a "throwaway prototype" application,
+   in which the end result is expected (even encouraged) to be an
+   unmaintainable mess.  The value of a prototype is not in the
+   resulting code, but in the knowledge gained.  I shall be more than
+   happy to discuss what I've learned about BonsaiJS, its suitability
+   for game programming, experimental game mechanics, and how I would
+   rewrite this project properly if I ever had the time and energy to
+   do so.
+
+It is however, suitable as a case study in how to finish a hobby
+project when you have a job, three kids and a corresponding amount of
+time and energy to spend on said hobby projects: Keep it small, focus
+on the mechanics, and cut every possible corner so that you REACH A
+FINISHED STATE BEFORE YOU LOSE MOMENTUM.  A hobby project that lies
+untouched for a week because it "needs refactoring" is already dead.
+
+  Art assets can not be redistributed or used for commercial purposes
+  without author's permission.
+
+  The source code in this file, however, is free for all.  Go nuts.
+  Rub it on your local System Architect and see it they develop a
+  rash.
+
+Copyright © 2014 Helge Skogly Holm <helge.holm@gmail.com>
+
+*********************************************************************/
+
 bonsai.run(document.getElementById('movie'), {
   code: init,
   width: 800,
