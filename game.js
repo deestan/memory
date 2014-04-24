@@ -45,9 +45,10 @@ untouched for a week because it "needs refactoring" is already dead.
   Art assets can not be redistributed or used for commercial purposes
   without author's permission.
 
-  The source code in this file, however, is free for all.  Go nuts.
+  The source code in this file, however, is public domain because I
+  hate you all and want to hurt you.  Print it out and color it in.
   Rub it on your local System Architect and see it they develop a
-  rash.
+  rash.  The only limit is your imagination.
 
 Copyright © 2014 Helge Skogly Holm <helge.holm@gmail.com>
 
