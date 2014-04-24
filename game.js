@@ -256,6 +256,11 @@ function init() {
       .attr({'x': 130,
              'y': 500});
 
+    mkText("Logistikk: helge.holm@gmail.com", 20)
+      .addTo(board)
+      .attr({'x': 220,
+             'y': 550});
+
     function select(button, difficulty) {
       if (selected) return;
       selected = true;
