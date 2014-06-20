@@ -88,7 +88,7 @@ function init() {
     
   function idStream() {
     var queue = [];
-    var ids = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ];
+    var ids = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ];
     var pickQueue = [];
     function yieldo() {
       if (queue[0] == undefined) {
@@ -173,7 +173,7 @@ function init() {
     load('background_easy', 'jpg');
     load('background_normal', 'jpg');
     load('background_hard', 'jpg');
-    for (var i = 0; i < 20; load(i++));
+    for (var i = 0; i < 21; load(i++));
 
     loadedOne();
   }
